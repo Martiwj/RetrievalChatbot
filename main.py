@@ -1,5 +1,4 @@
 from RetrievalChatbot import RetrievalChatbot
-from tester import Chatbot
 
 if  __name__ == "__main__":
     
