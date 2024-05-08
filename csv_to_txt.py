@@ -10,6 +10,3 @@ def csv_to_txt(csv_file, txt_file):
                 line_to_write = line.split(",")[5].strip(symbol_to_trim).rstrip(sm)
                 new_filename.write(line_to_write)
 
-
-                      
-csv_to_txt("dialogueText.csv", "dialogueText.txt")
