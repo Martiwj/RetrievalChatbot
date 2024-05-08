@@ -8,7 +8,6 @@ from kivy.graphics import Color, Rectangle
 from kivy.uix.scrollview import ScrollView
 from kivy.clock import Clock
 from RetrievalChatbot import RetrievalChatbot
-from tester import Chatbot
 
 class BackspaceTextInput(TextInput):
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
