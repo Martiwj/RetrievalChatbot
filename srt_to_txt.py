@@ -13,4 +13,3 @@ def srt_to_txt(srt_file, txt_file):
     with open(txt_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(subtitles))
 
-srt_to_txt('godfather.srt', 'god.txt')
