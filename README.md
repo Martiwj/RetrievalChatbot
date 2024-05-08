@@ -4,7 +4,7 @@ This is an easy-to-use retrieval chatbot where its replies are based on the data
 
 ## How to Use
 
-Simply clone this repository using `git clone https://github.com/Martiwj/RetrievalChatbot.git`. Then run the main file, and you should be good to go.
+Simply clone this repository using `git clone https://github.com/Martiwj/RetrievalChatbot.git`. Then run the `main.py` for a CLI interface or `ChatGUI.py` for a GUI interface, and you should be good to go.
 
 If you want to use a different dataset than Marvel, you can easily do so by implementing changes to the path in `ChatGui.py` to point to the desired dataset. For the bot to perform optimally, I recommend using a dialogue-based dataset.
 
