@@ -22,7 +22,7 @@ class BackspaceTextInput(TextInput):
 class ChatGUI(App):
     def __init__(self, **kwargs):
         super(ChatGUI, self).__init__(**kwargs)
-        self.bot = RetrievalChatbot("scripts/marvel.txt")
+        self.bot = RetrievalChatbot("Datasets/marvel.txt")
 
     def build(self):
         layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
