@@ -1,11 +1,10 @@
 import math
-
 class RetrievalChatbot:
-    """Retrieval-based chatbot using BM25 algorithm"""
+    """Retrieval-based chatbot using TF-IDF vectors"""
     
     def __init__(self, dialogue_file):
         """Given a corpus of dialoge utterances (one per line), computes the
-        document frequencies and average document length"""
+        document frequencies and TF-IDF vectors for each utterance"""
         
         # We store all utterances (as lists of lowercased tokens)
         self.utterances = []
@@ -16,9 +15,7 @@ class RetrievalChatbot:
         fd.close()
         
         self.doc_freqs = self._compute_doc_frequencies()
-        self.avg_len = self._compute_average_document_length()
-        self.k1 = 1.5
-        self.b = 0.75
+        self.tf_idfs = [self.get_tf_idf(utterance) for utterance in self.utterances]
 
         
     def _tokenise(self, utterance):
@@ -33,46 +30,62 @@ class RetrievalChatbot:
             for word in set(utterance):
                 doc_freqs[word] = doc_freqs.get(word, 0) + 1
         return doc_freqs
+
     
-    def _compute_average_document_length(self):
-        """Compute the average document length"""
-        
-        total_len = sum(len(utterance) for utterance in self.utterances)
-        return total_len / len(self.utterances)
-    
-    def get_bm25_score(self, query, utterance):
-        """Compute the BM25 score between the query and an utterance"""
-        
-        tf_weight = {}
-        for word in query:
-            tf_weight[word] = (self.k1 + 1) * utterance.count(word) / (self.k1 * ((1 - self.b) + self.b * len(utterance) / self.avg_len) + utterance.count(word))
-        
-        bm25_score = 0
-        for word in query:
-            if word in self.doc_freqs:
-                idf = math.log((len(self.utterances) - self.doc_freqs[word] + 0.5) / (self.doc_freqs[word] + 0.5))
-                bm25_score += idf * tf_weight[word]
-                
-        return bm25_score
+    def get_tf_idf(self, utterance):
+        """Compute the TF-IDF vector of an utterance. The vector can be represented 
+        as a dictionary mapping words to TF-IDF scores."""
+         
+        tf_idf_vals = {}
+        word_counts = {word:utterance.count(word) for word in utterance}
+        for word, count in word_counts.items():
+            idf = math.log(len(self.utterances)/(self.doc_freqs.get(word,0) + 1))
+            tf_idf_vals[word] = count * idf
+        return tf_idf_vals
     
     def get_response(self, query):
-        """ 
-        Finds out the utterance in the corpus that has the highest BM25 score
-        with respect to the query and returns that utterance. 
+        
         """
-        
-        # If the query is a string, we first tokenise it
-        if isinstance(query, str):
+        Finds out the utterance in the corpus that is closest to the query
+        (based on cosine similarity with TF-IDF vectors) and returns the 
+        utterance following it. 
+        """
+
+        # If the query is a string, we first tokenize it
+        if type(query) == str:
             query = self._tokenise(query)
-        
-        best_score = -1
-        best_utterance = None
-        
+
+        # Initialize variables to store the best similarity and its corresponding index
+        best_similarity = -1
+        best_index = -1
+
+        # Compute the TF-IDF vector for the query
+        query_tf_idf = self.get_tf_idf(query)
+
         # Iterate over all utterances in the corpus
-        for utterance in self.utterances:
-            score = self.get_bm25_score(query, utterance)
-            if score > best_score:
-                best_score = score
-                best_utterance = utterance
+        for i, utterance_tf_idf in enumerate(self.tf_idfs):
+            # Compute the cosine similarity between the query and the current utterance
+            similarity = self.compute_cosine(utterance_tf_idf, query_tf_idf)
+            # Update the best similarity and its corresponding index if necessary
+            if similarity > best_similarity:
+                best_similarity = similarity
+                best_index = i
+
+        # Return the utterance following the most similar utterance
+        return ' '.join(self.utterances[best_index + 1])
+    
+    def compute_cosine(self, tf_idf1, tf_idf2):
+        """Computes the cosine similarity between two vectors"""
         
-        return ' '.join(best_utterance)
+        dotproduct = 0
+        for word, tf_idf_val in tf_idf1.items():
+            if word in tf_idf2:
+                dotproduct += tf_idf_val*tf_idf2[word]
+                
+        return dotproduct / (self._get_norm(tf_idf1) * self._get_norm(tf_idf2))
+    
+    def _get_norm(self, tf_idf):
+        """Compute the vector norm"""
+        
+        return math.sqrt(sum([v**2 for v in tf_idf.values()]))
+

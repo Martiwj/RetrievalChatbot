@@ -1,9 +1,9 @@
 from RetrievalChatbot import RetrievalChatbot
 
-if  __name__ == "__main__":
+def main():
     
     inp = input("Your reply: ")
-    bot = RetrievalChatbot("scripts/marvel.txt")
+    bot = RetrievalChatbot("Datasets/marvel.txt")
     while(inp != "bye"):
         print()
         print("Bot: ", bot.get_response(inp))
@@ -12,3 +12,8 @@ if  __name__ == "__main__":
     
     print()
     print("Bye!\n")
+
+# For CLI use
+if  __name__ == "__main__":
+    main()
+
