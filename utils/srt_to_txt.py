@@ -3,7 +3,6 @@ def srt_to_txt(srt_file, txt_file):
         lines = f.readlines()
     subtitles = []
     for line in lines:
-        # Sjekk om linjen inneholder tidspunkter eller andre metadata
         if '-->' in line or line.strip().isdigit() or 'Downloaded From' in line:
             continue
         elif line.strip() == '':

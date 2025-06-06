@@ -1,12 +1,14 @@
 import math
+
 class RetrievalChatbot:
     """Retrieval-based chatbot using TF-IDF vectors"""
     
     def __init__(self, dialogue_file):
+        
         """Given a corpus of dialoge utterances (one per line), computes the
         document frequencies and TF-IDF vectors for each utterance"""
         
-        # We store all utterances (as lists of lowercased tokens)
+        # We store all utterances (as a lists of lowercased tokens)
         self.utterances = []
         fd = open(dialogue_file)
         for line in fd:
@@ -19,11 +21,14 @@ class RetrievalChatbot:
 
         
     def _tokenise(self, utterance):
-        """Convert an utterance to lowercase and tokenise it by splitting on space"""
+        
+        """Converts an utterance to lowercase and tokenise it by splitting on space"""
+        
         return utterance.strip().lower().split()
     
     def _compute_doc_frequencies(self):
-        """Compute the document frequencies (necessary for IDF)"""
+        
+        """Computes the document frequencies (necessary for IDF)"""
         
         doc_freqs = {}
         for utterance in self.utterances:
@@ -33,7 +38,8 @@ class RetrievalChatbot:
 
     
     def get_tf_idf(self, utterance):
-        """Compute the TF-IDF vector of an utterance. The vector can be represented 
+        
+        """Computes the TF-IDF vector of an utterance. The vector can be represented 
         as a dictionary mapping words to TF-IDF scores."""
          
         tf_idf_vals = {}
@@ -51,7 +57,7 @@ class RetrievalChatbot:
         utterance following it. 
         """
 
-        # If the query is a string, we first tokenize it
+        # If the query is a string, tokenises it
         if type(query) == str:
             query = self._tokenise(query)
 
@@ -59,7 +65,7 @@ class RetrievalChatbot:
         best_similarity = -1
         best_index = -1
 
-        # Compute the TF-IDF vector for the query
+        # Computes the TF-IDF vector for the query
         query_tf_idf = self.get_tf_idf(query)
 
         # Iterate over all utterances in the corpus
@@ -71,7 +77,7 @@ class RetrievalChatbot:
                 best_similarity = similarity
                 best_index = i
 
-        # Return the utterance following the most similar utterance
+        # Returns the utterance following the most similar utterance
         return ' '.join(self.utterances[best_index + 1])
     
     def compute_cosine(self, tf_idf1, tf_idf2):
@@ -85,7 +91,6 @@ class RetrievalChatbot:
         return dotproduct / (self._get_norm(tf_idf1) * self._get_norm(tf_idf2))
     
     def _get_norm(self, tf_idf):
-        """Compute the vector norm"""
-        
+        """Computes the vector norm"""
         return math.sqrt(sum([v**2 for v in tf_idf.values()]))
 
